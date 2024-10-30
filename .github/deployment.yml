@@ -1,0 +1,42 @@
+name: ☁️ Deployment Runner
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  id-token: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  releaseApp:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        name: 🔄 Checking Out Repository
+
+      - name: 🔐 Create .netrc for GitHub Access
+        run: |
+          cat << EOF > ~/.netrc
+          machine github.com
+          login user
+          password ${{ secrets.IOS_GIT_AUTHORIZATION_FOR_WORKFLOWS }}
+          machine api.github.com
+          login user
+          password ${{ secrets.IOS_GIT_AUTHORIZATION_FOR_WORKFLOWS }}
+          EOF
+          chmod 600 ~/.netrc
+
+      - name: ⚙️ Run Deployment Lane
+        working-directory: fastlane
+        run: |
+          echo "🚀 Running Fastlane To Create Release..."
+          fastlane releasePackage
+          
+      - name: 🎉 Deployment Successful!
+        run: |
+          echo "🔥 Deployment Completed Sucessfully! 🤣"
