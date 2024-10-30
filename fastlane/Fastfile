@@ -132,7 +132,7 @@ lane :releasePackage do
   
   set_github_release(
     api_token: ENV['IOS_GIT_AUTHORIZATION_FOR_WORKFLOWS'],
-    repository_name: "Sequencer",
+    repository_name: "BlackMirroz/Sequencer",
     name: "#{version_number}",
     tag_name: "#{version_number}",
     description: "Latest Release",
