@@ -29,7 +29,7 @@ import PackageDescription
 let package = Package(
   name: "Sequencer",
   platforms: [
-    .macOS(.v10_15), .iOS(.v16), .tvOS(.v13), .watchOS(.v7)
+    .macOS(.v11), .iOS(.v16), .tvOS(.v13), .watchOS(.v7)
   ],
   products: [
     .library(

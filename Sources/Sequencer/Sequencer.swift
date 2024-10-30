@@ -56,12 +56,15 @@ public final class Sequencer: Sequencable, ObservableObject {
 
   // MARK: - LifeCycle
 
+  /// Starts executing the sequence of actions.
+  /// Logs the number of steps and begins processing the queued actions.
   public final func start() {
     logState("Starting sequence of \(actions.count) steps.")
     isCancelled = false
     executeActions()
   }
 
+  /// Cancels the sequence, clearing all pending actions and calling the completion handler if set.
   public final func cancel() {
     logState("Sequencer cancelled.")
     isCancelled = true
@@ -69,6 +72,9 @@ public final class Sequencer: Sequencable, ObservableObject {
     completionHandler?()
   }
 
+  /// Sets a completion handler to be called when the sequence completes.
+  /// - Parameter handler: The closure to be executed upon sequence completion.
+  /// - Returns: The `Sequencer` instance, allowing for method chaining.
   public final func completion(_ handler: @escaping DefaultClosure) -> Self {
     completionHandler = handler
     return self
@@ -76,11 +82,16 @@ public final class Sequencer: Sequencable, ObservableObject {
 
   // MARK: - Steps
 
+  /// Adds an action to be performed as part of the sequence.
+  /// - Parameter action: The action to perform, of type `SequenceAction`.
+  /// - Returns: The `Sequencer` instance, enabling chaining of further actions.
   public func perform(_ action: SequenceAction) -> Self {
     actions.append(action)
     return self
   }
 
+  /// Executes actions in sequence, calling each one and handling completion.
+  /// Logs the current step and recursively processes each action until the sequence is complete.
   func executeActions() {
 
     guard
@@ -102,28 +113,16 @@ public final class Sequencer: Sequencable, ObservableObject {
       self.executeActions()
     }
   }
-
-  // MARK: - Debug
-
-  func logState(_ message: String) {
-    guard logsSteps else { return }
-
-    if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-      print(message)
-    } else {
-      sequenceLogger.log("\(message, privacy: .public)")
-    }
-  }
 }
 
 // MARK: - Default Steps
 
-extension Sequencer {
+public extension Sequencer {
 
   /// Adds an instantaneous action to the sequence.
   /// - Parameter action: The block of code to be executed.
   /// - Returns: The `Sequencer` instance with the new action added, allowing for method chaining.
-  public final func run(action: @escaping DefaultClosure) -> Self {
+  final func run(action: @escaping DefaultClosure) -> Self {
     actions.append(RunAction(action: action))
     return self
   }
@@ -133,7 +132,7 @@ extension Sequencer {
   ///   - animationWithDuration: An `AnimationWithDuration` instance defining the animation style and duration.
   ///   - action: The closure to execute within the animation.
   /// - Returns: The `Sequencer` instance with the animated action added, allowing for method chaining.
-  public final func animate(
+  final func animate(
     _ animationWithDuration: AnimationWithDuration,
     action: @escaping DefaultClosure
   ) -> Self {
@@ -144,10 +143,26 @@ extension Sequencer {
     return self
   }
 
+  /// Convenience method to add a default `SequencerAnimationType`.
+  /// - Parameters:
+  ///   - type: The animation type (e.g., linear, spring) specified as `SequencerAnimationType`.
+  ///   - action: The closure to execute within the animation.
+  /// - Returns: The `Sequencer` instance with the animated action added, allowing for method chaining.
+  final func animate(
+    type: SequencerAnimationType,
+    action: @escaping DefaultClosure
+  ) -> Self {
+    actions.append(AnimateAction(
+      animationWithDuration: type.animationWithDuration,
+      action: action
+    ))
+    return self
+  }
+
   /// Pauses the sequence for the specified number of seconds.
   /// - Parameter seconds: Duration to pause in seconds.
   /// - Returns: The `Sequencer` instance with the pause action added, allowing for method chaining.
-  public final func pause(_ seconds: CGFloat) -> Self {
+  final func pause(_ seconds: CGFloat) -> Self {
     actions.append(PauseAction(seconds: seconds))
     return self
   }
@@ -157,7 +172,7 @@ extension Sequencer {
   ///   - seconds: Duration before the action is executed.
   ///   - action: The block of code to be executed.
   /// - Returns: The `Sequencer` instance with the delayed action added, allowing for method chaining.
-  public final func delayFor(_ seconds: CGFloat, action: @escaping DefaultClosure) -> Self {
+  final func delayFor(_ seconds: CGFloat, action: @escaping DefaultClosure) -> Self {
     actions.append(DelayAction(seconds: seconds, action: action))
     return self
   }
@@ -167,7 +182,7 @@ extension Sequencer {
   /// without needing to re-define it multiple times.
   /// - Parameter times: The number of times to repeat the last action in the sequence.
   /// - Returns: The `Sequencer` instance with the repeated action, allowing for method chaining.
-  public final func `repeat`(times: Int) -> Self {
+  final func `repeat`(times: Int) -> Self {
     guard let lastAction = actions.last else { return self }
 
     actions.removeLast()
@@ -175,5 +190,22 @@ extension Sequencer {
     actions.append(repeatAction)
 
     return self
+  }
+}
+
+// MARK: - Debug
+
+extension Sequencer {
+  
+  /// Logs the state of the sequencer if logging is enabled.
+  /// - Parameter message: The message to log.
+  func logState(_ message: String) {
+    guard logsSteps else { return }
+    
+    if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+      print(message)
+    } else {
+      sequenceLogger.log("\(message, privacy: .public)")
+    }
   }
 }

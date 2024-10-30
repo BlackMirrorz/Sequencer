@@ -24,14 +24,14 @@
 //
 
 /// Repeats an action based on the number of times desired
-struct RepeatAction: SequenceAction {
+internal struct RepeatAction: SequenceAction {
   let action: SequenceAction
   let times: Int
 
-  var verboseDescription: String {
-    "Repeating action \(times) times: \(action.verboseDescription)"
-  }
+  var verboseDescription: String { "Repeating action \(times) times: \(action.verboseDescription)" }
 
+  // MARK: - Execution
+  
   func execute(completion: @escaping () -> Void) {
 
     guard times > 0 else {

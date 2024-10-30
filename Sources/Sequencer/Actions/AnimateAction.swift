@@ -45,7 +45,7 @@ public struct AnimateAction: SequenceAction {
     self.action = action
   }
 
-  // MARK: - Callbacks
+  // MARK: - Execution
 
   public func execute(completion: @escaping () -> Void) {
     withAnimation(animationWithDuration.animation) {

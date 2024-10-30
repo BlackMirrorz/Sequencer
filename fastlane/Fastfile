@@ -139,7 +139,7 @@ lane :releasePackage do
   )
 
   UI.message("✅ Successfully Created Release #{version_number} 🫠")
-  UI.message("🏆 #{ENV['PROJECT_NAME']} Version Updated 🏆")
+  UI.message("🏆 Sequencer Version Updated 🏆")
   UI.message("🏆 Version: #{version_number} Released 🏆")
   
 end
