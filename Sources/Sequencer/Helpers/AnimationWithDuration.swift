@@ -54,16 +54,15 @@ public struct AnimationWithDuration {
   }
 }
 
-
 // MARK: - Convenience Methods
 
-public extension AnimationWithDuration {
+extension AnimationWithDuration {
 
   /// Creates a linear animation with a specified duration.
   ///
   /// - Parameter duration: The duration of the animation, in seconds.
   /// - Returns: An `AnimationWithDuration` instance with a linear animation.
-  static func linear(duration: Double) -> AnimationWithDuration {
+  public static func linear(duration: Double) -> AnimationWithDuration {
     AnimationWithDuration(animation: .linear(duration: duration), duration: duration, verboseDescription: "Linear Animation")
   }
 
@@ -71,7 +70,7 @@ public extension AnimationWithDuration {
   ///
   /// - Parameter duration: The duration of the animation, in seconds.
   /// - Returns: An `AnimationWithDuration` instance with an ease-in animation.
-  static func easeIn(duration: Double) -> AnimationWithDuration {
+  public static func easeIn(duration: Double) -> AnimationWithDuration {
     AnimationWithDuration(animation: .easeIn(duration: duration), duration: duration, verboseDescription: "Ease In Animation")
   }
 
@@ -79,7 +78,7 @@ public extension AnimationWithDuration {
   ///
   /// - Parameter duration: The duration of the animation, in seconds.
   /// - Returns: An `AnimationWithDuration` instance with an ease-out animation.
-  static func easeOut(duration: Double) -> AnimationWithDuration {
+  public static func easeOut(duration: Double) -> AnimationWithDuration {
     AnimationWithDuration(animation: .easeOut(duration: duration), duration: duration, verboseDescription: "Ease Out Animation")
   }
 
@@ -87,7 +86,7 @@ public extension AnimationWithDuration {
   ///
   /// - Parameter duration: The duration of the animation, in seconds.
   /// - Returns: An `AnimationWithDuration` instance with an ease-in-ease-out animation.
-  static func easeInEaseOut(duration: Double) -> AnimationWithDuration {
+  public static func easeInEaseOut(duration: Double) -> AnimationWithDuration {
     AnimationWithDuration(animation: .easeInOut(duration: duration), duration: duration, verboseDescription: "Ease In-Ease Out Animation")
   }
 
@@ -98,7 +97,7 @@ public extension AnimationWithDuration {
   ///   - dampingFraction: Controls the "bounciness" of the spring; values closer to `1.0` reduce bounce. Defaults to `0.8`.
   ///   - blendDuration: The amount of blending between animations when transitioning. Defaults to `0.0`.
   /// - Returns: An `AnimationWithDuration` instance with a spring animation.
-  static func spring(response: Double = 0.5, dampingFraction: Double = 0.8, blendDuration: Double = 0.0) -> AnimationWithDuration {
+  public static func spring(response: Double = 0.5, dampingFraction: Double = 0.8, blendDuration: Double = 0.0) -> AnimationWithDuration {
     AnimationWithDuration(
       animation: .spring(response: response, dampingFraction: dampingFraction, blendDuration: blendDuration),
       duration: response,
@@ -110,7 +109,7 @@ public extension AnimationWithDuration {
   ///
   /// - Parameter duration: The duration of the animation, in seconds.
   /// - Returns: An `AnimationWithDuration` instance with a bouncy animation.
-  static func bouncy(duration: Double) -> AnimationWithDuration {
+  public static func bouncy(duration: Double) -> AnimationWithDuration {
     AnimationWithDuration(animation: .bouncy(duration: duration), duration: duration, verboseDescription: "Bouncy Animation")
   }
 }

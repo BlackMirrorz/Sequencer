@@ -24,14 +24,14 @@
 //
 
 /// Executes an immediate action.
-internal struct RunAction: SequenceAction {
+struct RunAction: SequenceAction {
 
   let action: DefaultClosure
 
   var verboseDescription: String { "Running instantaneous step." }
 
   // MARK: - Execution
-  
+
   func execute(completion: @escaping DefaultClosure) {
     action()
     completion()

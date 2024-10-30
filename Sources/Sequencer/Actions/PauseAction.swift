@@ -26,14 +26,14 @@
 import Foundation
 
 /// Pauses the sequence for a specified duration.
-internal struct PauseAction: @preconcurrency SequenceAction {
+struct PauseAction: @preconcurrency SequenceAction {
 
   let seconds: CGFloat
 
   var verboseDescription: String { "Pausing for \(seconds) seconds." }
 
   // MARK: - Execution
-  
+
   @MainActor
   func execute(completion: @escaping () -> Void) {
     DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {

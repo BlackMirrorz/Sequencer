@@ -26,14 +26,14 @@
 import Foundation
 
 /// Delays and then executes an action after a specified duration.
-internal struct DelayAction: @preconcurrency SequenceAction {
+struct DelayAction: @preconcurrency SequenceAction {
   let seconds: CGFloat
   let action: DefaultClosure
 
   var verboseDescription: String { "Delay of \(seconds) seconds." }
 
   // MARK: - Execution
-  
+
   @MainActor
   func execute(completion: @escaping () -> Void) {
     DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
