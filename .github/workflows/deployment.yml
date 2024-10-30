@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch: {}
 
+env:
+  IOS_GIT_AUTHORIZATION_FOR_WORKFLOWS: ${{ secrets.IOS_GIT_AUTHORIZATION_FOR_WORKFLOWS }}
+  
 permissions:
   contents: write
   id-token: write
