@@ -1,5 +1,5 @@
 
-<img src="https://github.com/user-attachments/assets/65f37f3b-0474-403b-ac72-6c4d0d21bb93" alt="Sequencer For SwiftUI & UIKit Logo" width="231" height="289" />
+<img src="Sources/Sequencer/Logo/sequencerLogo.png" alt="Sequencer For SwiftUI & UIKit Logo" width="231" height="289" />
 
 Sequencer is a `Swift` library designed to manage the execution of blocks of code (`SequenceAction`), using an easy-to-use dot syntax style API to build complex chains, making it ideal for building step-based animations or workflows.
 
@@ -409,4 +409,4 @@ sequencer.cancel()
 ### Sequencer in Action
 A basic example using  `Sequencer` can be found in the Demo Project.
 
-<img src="https://github.com/user-attachments/assets/6ae5c9fa-42b9-4ecf-8352-af95d7060e28"  alt="Sequencer For SwiftUI & UIKit Xcode Example"   width="220" height="476">
+<img src="Sources/Sequencer/Logo/sequencerExample.gif"  alt="Sequencer For SwiftUI & UIKit Xcode Example"   width="220" height="476">
