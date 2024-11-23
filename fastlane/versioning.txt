@@ -1,1 +1,6 @@
+VERSION=1.0.0
+BUILD=1
 
+RELEASENOTES:
+Latest Release.
+Add Github Actions.

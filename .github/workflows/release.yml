@@ -1,0 +1,57 @@
+name: ☁️ Deployment Runner
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+
+  #---------------
+  # Release
+  # (∩｀-´)⊃━☆ﾟ.*･｡ﾟ
+  #---------------
+
+  TagAndRelease:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔄 Checking Out Repository
+        uses: actions/checkout@v4
+
+      - name: 🕵️ Read Version and Release Notes from File
+        id: extract_version_and_release_notes
+        working-directory: fastlane
+        run: |
+          version_path="versioning.txt"
+          version_contents=$(cat "$version_path")
+          
+          version_number_to_set=$(echo "$version_contents" | grep -oP '(?<=VERSION=)[\d.]+')
+
+          release_notes=$(awk '/^RELEASENOTES:/{flag=1; next} /^$/{flag=0} flag' "$version_path")
+
+          echo "✏️ Extracted Version Number: $version_number_to_set"
+          echo "✏️ Extracted Release Notes:"
+          echo "$release_notes"
+          
+          echo "version=$version_number_to_set" >> $GITHUB_OUTPUT
+          echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$release_notes" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 🚀 Create GitHub Release
+        timeout-minutes: 15
+        uses: actions/create-release@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+          tag_name: ${{ steps.extract_version_and_release_notes.outputs.version }} 
+          release_name: ${{ steps.extract_version_and_release_notes.outputs.version }}
+          body: ${{ steps.extract_version_and_release_notes.outputs.release_notes }}
+
+      - name: 🎉 Deployment Successful!
+        run: |
+          echo "🔥 Deployment of Sequencer has completed successfully!"
