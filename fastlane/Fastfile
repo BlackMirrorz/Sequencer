@@ -1,0 +1,165 @@
+# Set Development Platform
+default_platform(:ios)
+
+# Create Global Mutable Variables
+PROJECT_NAME = 'sequencer-ios'
+
+#----------------------------------------
+# Dependency Installation
+# Setup Base Dependencies
+#----------------------------------------
+
+# Setup Base Dependencies On Your Machine
+desc "☁️  Install Base Dependencies"
+lane :setupBaseDependenciesOnMachine do
+  sh "chmod +x ./scripts/configuration.sh" # Adjusted path
+  sh "./scripts/configuration.sh" # Adjusted path
+  UI.success("🫠 Base Dependencies Configured.")
+end
+
+# Setup Base Dependencies On CI
+desc "☁️  Install Base Dependencies For The CI."
+lane :setupBaseDependenciesCI do
+  sh "chmod +x ./scripts/configurationCI.sh" # Adjusted path
+  sh "./scripts/configurationCI.sh" # Adjusted path
+  UI.success("🫠 Base Dependencies Configured.")
+end
+
+#-----------------------------
+# Linting & Code Formatting
+# Runs SwiftLint & SwiftFormat
+#-----------------------------
+
+desc "☁️  Validates The Current Project Using SwiftLint And Swift Format"
+lane :lint_and_format_project_with_validation do
+  lint_and_format_project(action: :lint, tool: :lint)
+  lint_and_format_project(action: :validate_format, tool: :format)
+  UI.success("✅ Code Standardisation Completed 🫠")
+end
+
+desc "☁️  Lints And Formats The Current Project"
+lane :lint_and_format_project_with_autocorrect do
+  lint_and_format_project(action: :fix, tool: :lint)
+  lint_and_format_project(action: :format, tool: :format)
+  UI.success("✅ Code Standardisation Completed 🫠")
+end
+
+desc "☁️  Lints Or Formats The Swift Project"
+private_lane :lint_and_format_project do |options|
+  
+  action = options[:action] # :lint, :fix, :format, or :validate_format
+  tool = options[:tool] # :lint for SwiftLint or :format for SwiftFormat
+  
+  swift_tool_info = swift_tool_version_extractor(tool: tool.to_s)
+  executable_path = swift_tool_info[:swifttool_executable]
+  UI.success("🫠 Executable Extrapolated #{executable_path}")
+  
+  UI.success("Current directory: #{Dir.pwd}")
+ 
+  
+  case tool
+  when :lint
+   swiftlint(
+        mode: action == :fix ? :fix : :lint,
+        executable: executable_path,
+        config_file: "fastlane/.swiftlint.yml",
+        raise_if_swiftlint_error: true,
+        ignore_exit_status: false
+      )
+  when :format
+    swiftformat(
+        executable: executable_path,
+        swiftversion: "5",
+        config: "fastlane/.swiftformat",
+        dryrun: action == :validate_format,
+        lint: action == :validate_format
+      )
+  else
+    UI.error("Invalid tool specified")
+  end
+  
+  UI.success("✅ Action #{action} With #{tool} Completed 🫠")
+end
+
+#----------------
+#  Tests
+# Runs Unit Tests
+#----------------
+
+desc "☁️  Runs Unit Tests"
+lane :run_unit_tests do
+  
+  didPassUnitTests = unit_tests(
+    command: "test",
+    simulator: "macosx"
+  )
+
+  tests_status = didPassUnitTests ? "🏆 Unit Tests Passed 🏆" : "⚠️ Unit Tests Failed ⚠️"
+  message_body = didPassUnitTests ? "🛠️ Good Work! 🛠️" : "🆘 Please Check The Logs! 🆘"
+  
+  project_name = "Sequencer"
+  
+  UI.message("#{tests_status}")
+  UI.message("#{message_body}")
+  
+
+  unless didPassUnitTests
+    UI.user_error!("💩 Tests Failed")
+  end
+end
+
+#-----------------------------
+# Package Release Pipeline
+#-----------------------------
+
+desc "☁️ Creates A New Package Version"
+lane :releasePackage do
+
+  increment_version_and_build
+
+  version_number = Actions.lane_context[SharedValues::VERSION_NUMBER]
+  build_number = Actions.lane_context[SharedValues::BUILD_NUMBER]
+
+  add_git_tag(
+    message: "Tagging Version #{version_number} With Build Number #{build_number}",
+    tag: "#{version_number}",
+    build_number: build_number
+  )
+  
+  push_to_git_remote(tags: true)
+
+  UI.success("✅ Data To Be Passed In Key #{ENV['IOS_GIT_AUTHORIZATION_FOR_WORKFLOWS']} For #{ENV['REPOSITORY_NAME']} ")
+  
+  set_github_release(
+    api_token: ENV['IOS_GIT_AUTHORIZATION_FOR_WORKFLOWS'],
+    repository_name: "BlackMirrorz/Sequencer",
+    name: "#{version_number}",
+    tag_name: "#{version_number}",
+    description: "Latest Release",
+  )
+
+  UI.message("✅ Successfully Created Release #{version_number} 🫠")
+  UI.message("🏆 Sequencer Version Updated 🏆")
+  UI.message("🏆 Version: #{version_number} Released 🏆")
+  
+end
+
+#----------------------------------
+# Versioning
+# Increments Version & Build Number
+#----------------------------------
+
+# Increment Build & Version Numbers
+desc "☁️  Increment Version & Build Numbers"
+private_lane :increment_version_and_build do
+  version_path = "./versioning.txt"
+  version_contents = File.read(version_path)
+  version_number_to_set = version_contents[/VERSION=(\S+)/, 1]
+  build_number = version_contents[/BUILD=(\d+)/, 1]
+
+  Actions.lane_context[SharedValues::VERSION_NUMBER] = version_number_to_set
+  Actions.lane_context[SharedValues::BUILD_NUMBER] = build_number
+  
+  UI.success("⚙️ Version #{version_number_to_set} and Build #{build_number} Numbers Incremented Successfully! 🚀")
+end
+
