@@ -78,7 +78,7 @@ struct ContentView: View {
     }.frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 
-  // MARK: - Views
+  // MARK: - ViewBuilders
 
   @ViewBuilder
   private var logo: some View {
